@@ -11,6 +11,8 @@ import org.antlr.v4.runtime.misc.Tuple;
 
 import java.util.List;
 
+import static java.lang.Math.max;
+
 /**
  * Provides an implementation of {@link TokenSource} as a wrapper around a list
  * of {@link Token} objects.
@@ -102,7 +104,8 @@ public class ListTokenSource implements TokenSource {
 			Token lastToken = tokens.get(tokens.size() - 1);
 			String tokenText = lastToken.getText();
 			if (tokenText != null) {
-				int lastNewLine = tokenText.lastIndexOf('\n');
+				int lastNewLine = max(tokenText.lastIndexOf('\n'), tokenText.lastIndexOf('\r'));
+
 				if (lastNewLine >= 0) {
 					return tokenText.length() - lastNewLine - 1;
 				}
@@ -131,7 +134,7 @@ public class ListTokenSource implements TokenSource {
 					}
 				}
 
-				int stop = Math.max(-1, start - 1);
+				int stop = max(-1, start - 1);
 				eofToken = _factory.create(Tuple.create(this, getInputStream()), Token.EOF, "EOF", Token.DEFAULT_CHANNEL, start, stop, getLine(), getCharPositionInLine());
 			}
 
@@ -166,10 +169,21 @@ public class ListTokenSource implements TokenSource {
 
 			String tokenText = lastToken.getText();
 			if (tokenText != null) {
+
+				boolean wasCr = false;
 				for (int i = 0; i < tokenText.length(); i++) {
-					if (tokenText.charAt(i) == '\n') {
+
+					if (tokenText.charAt(i) == '\n' || wasCr) {
 						line++;
+						wasCr = false;
+						continue;
 					}
+
+					if (tokenText.charAt(i) == '\r') {
+						wasCr = true;
+					}
+
+
 				}
 			}
 
