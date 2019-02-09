@@ -27,6 +27,7 @@ public class JavaEscapeStringMap extends AbstractMap<String, Object> {
 					break;
 
 				case '\r':
+					builder.append("\\r");
 					// normalize \r\n to just \n
 					break;
 
