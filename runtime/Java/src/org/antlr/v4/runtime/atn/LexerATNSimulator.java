@@ -76,6 +76,7 @@ public class LexerATNSimulator extends ATNSimulator {
 	/** The index of the character relative to the beginning of the line 0..n-1 */
 	protected int charPositionInLine = 0;
 
+	protected boolean lastCharWasCR;
 	protected int mode = Lexer.DEFAULT_MODE;
 
 	/** Used during DFA/ATN exec to record the most recent accept configuration info */
@@ -733,8 +734,14 @@ public class LexerATNSimulator extends ATNSimulator {
 			charPositionInLine=0;
 		}
 		else {
-			charPositionInLine++;
+			if (lastCharWasCR) {
+				line++;
+				charPositionInLine=0;
+			} else {
+				charPositionInLine++;
+			}
 		}
+		lastCharWasCR = curChar == '\r';
 		input.consume();
 	}
 
