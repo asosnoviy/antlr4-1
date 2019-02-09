@@ -180,6 +180,9 @@ public class ListTokenSource implements TokenSource {
 					}
 
 					if (tokenText.charAt(i) == '\r') {
+						if ( i == tokenText.length() - 1) {
+							line++;
+						}
 						wasCr = true;
 					}
 
